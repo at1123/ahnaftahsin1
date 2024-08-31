@@ -1,0 +1,221 @@
+<div style="width: 50%; max-width: 500px; background-color: #ffffff; border: 2px solid #007bff; padding: 20px; border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); text-align: center; margin: 20px auto;">
+    <!-- Title -->
+    <h3 style="margin-top: 0; color: #007bff;">AT Menu</h3>
+    
+    <!-- Buttons Inside the Box (Inline Block) -->
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="index2.html" style="text-decoration: none;"><button style="background-color: #007bff; color: white; padding: 10px 20px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; display: inline-block;">Home</button></a>
+    </div>
+</div>
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Upload Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+
+        .upload-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+            text-align: center;
+        }
+
+        .upload-container h2 {
+            margin-bottom: 20px;
+        }
+
+        .upload-container input[type="file"],
+        .upload-container input[type="text"] {
+            display: block;
+            margin: 10px auto;
+            width: calc(100% - 40px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .upload-container button {
+            padding: 10px 20px;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .upload-container button:hover {
+            background-color: #0c47b8;
+        }
+
+        .photo-gallery {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .photo-item {
+            display: inline-block;
+            margin: 15px;
+            position: relative;
+        }
+
+        .photo-item img {
+            width: 200px;
+            height: auto;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .photo-item img:hover {
+            transform: scale(1.05);
+        }
+
+        .photo-item p {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .delete-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 5px 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .delete-button:hover {
+            background-color: darkred;
+        }
+
+        .fullscreen-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .fullscreen-overlay img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <h2>Upload Your Photo</h2>
+        <!-- File Upload Input -->
+        <input type="file" id="fileInput" accept="image/*">
+        <!-- Caption Input -->
+        <input type="text" id="captionInput" placeholder="Write a caption for your photo">
+        <!-- Upload Button -->
+        <button onclick="uploadPhoto()">Upload Photo</button>
+    </div>
+
+    <!-- Photo Gallery to Display Uploaded Photos -->
+    <div class="photo-gallery" id="photoGallery"></div>
+
+    <!-- Fullscreen Overlay for Viewing Photos -->
+    <div class="fullscreen-overlay" id="fullscreenOverlay" onclick="closeFullscreen()">
+        <img id="fullscreenImage" src="" alt="Fullscreen Photo">
+    </div>
+
+    <script>
+        function uploadPhoto() {
+            const fileInput = document.getElementById('fileInput');
+            const captionInput = document.getElementById('captionInput');
+            const photoGallery = document.getElementById('photoGallery');
+
+            // Get the selected file
+            const file = fileInput.files[0];
+            const caption = captionInput.value;
+
+            if (file) {
+                // Create a FileReader to read the file
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    // Create a new div element for the photo item
+                    const photoItem = document.createElement('div');
+                    photoItem.className = 'photo-item';
+
+                    // Create an image element
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = 'Uploaded Photo';
+                    img.onclick = function() { openFullscreen(e.target.src); }; // Add click event for fullscreen
+
+                    // Create a paragraph element for the caption
+                    const captionElem = document.createElement('p');
+                    captionElem.textContent = caption;
+
+                    // Create a delete button
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.className = 'delete-button';
+                    deleteButton.onclick = function() {
+                        photoGallery.removeChild(photoItem);
+                    };
+
+                    // Append elements to the photo item
+                    photoItem.appendChild(img);
+                    photoItem.appendChild(captionElem);
+                    photoItem.appendChild(deleteButton);
+
+                    // Append the photo item to the photo gallery
+                    photoGallery.appendChild(photoItem);
+                };
+
+                // Read the file as a data URL
+                reader.readAsDataURL(file);
+            } else {
+                alert('Please select a file to upload.');
+            }
+
+            // Clear the input fields
+            fileInput.value = '';
+            captionInput.value = '';
+        }
+
+        function openFullscreen(src) {
+            const fullscreenOverlay = document.getElementById('fullscreenOverlay');
+            const fullscreenImage = document.getElementById('fullscreenImage');
+            fullscreenImage.src = src;
+            fullscreenOverlay.style.display = 'flex';
+        }
+
+        function closeFullscreen() {
+            const fullscreenOverlay = document.getElementById('fullscreenOverlay');
+            fullscreenOverlay.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
